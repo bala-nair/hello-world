@@ -17,7 +17,10 @@ pipeline {
          }
          stage('Upload to AWS') {
               steps {
-                  withAWS(region:'us-west-2',credentials:'AKIAYAW4UYG737MV72UA') {
+                   withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AKIAYAW4UYG737MV72UA', credentialsId: '', secretKeyVariable: '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']]) {
+    // some block
+                    }
+                   {
                   sh 'echo "Uploading content with AWS creds"'
                       s3Upload(pathStyleAccessEnabled: true, payloadSigningEnabled: true, file:'index.html', bucket:'bnudagram')
                   }
