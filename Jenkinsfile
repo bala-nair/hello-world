@@ -1,27 +1,16 @@
-pipeline {
-     agent any
-     stages {
-         stage('Build') {
-             steps {
-                 sh 'echo "Hello World"'
-                 sh '''
-                     echo "Multiline shell steps works too"
-                     ls -lah
-                 '''
-             }
-         }
-         stage('Lint HTML') {
-              steps {
-                  sh 'tidy -q -e *.html'
-              }
-         }
-         stage('Upload to AWS') {
-              steps {
-                  withAWS(region:'us-west-2',credentials:'bnair01') {
-                  sh 'echo "Uploading content with AWS creds"'
-                      s3Upload(pathStyleAccessEnabled: true, payloadSigningEnabled: true, file:'index.html', bucket:'bnudagram')
-                  }
-              }
-         }
-     }
-}
+node {
+    def registry = 'bala-nair/hello-world'
+    stage('Checking out git repo') {
+      echo 'Checkout...'
+      checkout scm
+    }
+    stage('Checking environment') {
+      echo 'Checking environment...'
+      sh 'git --version'
+      echo "Branch: ${env.BRANCH_NAME}"
+      sh 'docker -v'
+    }
+    stage("Linting") {
+      echo 'Linting...'
+      sh '/home/ubuntu/.local/bin/hadolint Dockerfile'
+    }
